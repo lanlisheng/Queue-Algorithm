@@ -22,7 +22,7 @@ typedef enum {
   OS_RUN = !OS_SLEEP //任务运行
 } OS_TaskStatusTypeDef;
 
-// 编写系统内核之第一步:创建系统任务结构体
+ // 编写系统内核之第一步:创建系统任务结构体
 typedef struct {
   void (*task)(void); //任务函数指针:函数指针指向处理函数,一般是while(1)中的函数
   OS_TaskStatusTypeDef RunFlag; //任务运行状态:休眠还是运行

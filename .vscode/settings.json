@@ -8,6 +8,11 @@
         "new": "c",
         "*.tcc": "c",
         "type_traits": "c",
-        "typeinfo": "c"
-    }
+        "typeinfo": "c",
+        "time.h": "c"
+    },
+    "files.autoSave": "onFocusChange",
+    "workbench.colorTheme": "Community Material Theme Darker High Contrast",
+    "window.zoomLevel": 1,
+    "editor.formatOnType": true
 }
