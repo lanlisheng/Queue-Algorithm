@@ -16,22 +16,25 @@ void KeyScanHandle(KEY_ID_TYPEDEF KeyID, KEY_STATE_TYPEDEF KeyState) {
     }
   }
 }
+/* Queue */
+// int main(int argc, char *argv[]) {
+//   unsigned char a;
+//   QueueEmpty(KeyMsg);
+//   printf("site:%d\r\n", sizeof(KeyMsg.Buff));
+//   printf("&KeyMsg = 0x%x,KeyMsg.Buff = 0x%x,KeMsg.Head = 0x%x,KeyMsg.Tail "
+//          "=0x%x \r\n",
+//          &KeyMsg, KeyMsg.Buff, KeyMsg.Head, KeyMsg.Tail);
+//   printf("&buff[0]=0x%x,&buff[1]=0x%x,&buff[2]=0x%x,&buff[3]=0x%x \r\n",
+//          &KeyMsg.Buff[0], &KeyMsg.Buff[1], &KeyMsg.Buff[2], &KeyMsg.Buff[3]);
+// }
 
+/* KEY */
 int main(int argc, char *argv[]) {
 
   KeyInit();
   KeyScanCBSRegister(KeyScanHandle);
   KeyPoll();
-  //   unsigned char a;
-  //   QueueEmpty(KeyMsg);
-  //   printf("site:%d\r\n", sizeof(KeyMsg.Buff));
-  //   printf("&KeyMsg = 0x%x,KeyMsg.Buff = 0x%x,KeMsg.Head = 0x%x,KeyMsg.Tail =
-  //   "
-  //          "0x%x\r\n",
-  //          &KeyMsg, KeyMsg.Buff, KeyMsg.Head, KeyMsg.Tail);
-  //   printf("&buff[0]=0x%x,&buff[1]=0x%x,&buff[2]=0x%x,&buff[3]=0x%x \r\n",
-  //          &KeyMsg.Buff[0], &KeyMsg.Buff[1], &KeyMsg.Buff[2],
-  //          &KeyMsg.Buff[3]);
+
   return 0;
 }
 
