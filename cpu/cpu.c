@@ -2,6 +2,10 @@
 #include "OS_System.h"
 
 #define SystemCoreClock 72000000
+
+static void hal_CoreClockInit(void);
+static void hal_CPU_Critical_Control(CPU_EA_TYPEDEF cmd, unsigned char *pSta);
+
 /*
  * Function Name : hal_CPUInit
  * Descriptin    : cpu系统时钟相关初始化
@@ -38,7 +42,9 @@ static void hal_CoreClockInit(void) {
  * Return        : None
  * Attention     : 内核时钟10ms定时中断回调函数，一定要将系统时钟处理函数放进去
  */
-void SysTick_Handler(void) { OS_ClockInterruptHandle(); }
+void SysTick_Handler(void) {
+  OS_ClockInterruptHandle(); //系统Systick定时中断处理
+}
 
 /*
  * Function Name : hal_getprmask

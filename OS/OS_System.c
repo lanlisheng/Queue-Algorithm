@@ -7,8 +7,7 @@ volatile OS_TaskTypeDef OS_Task[OS_TASK_SUM]; //结构中的数据不会在中断中被改变.
 
 //编写系统内核第八步：创建注册CUP中断控制函数
 /*
- * Function Name : void OS_CPUInterruptCBSRegister(CPUInterrupt_CallBack_t
- * pCPUInterrupCtrlCBS)
+ * Function Name : OS_CPUInterruptCBSRegister
  * Descriptin    : 注册CPU中断控制函数
  * Input         : - pCPUInterrupCtrlCBS:cpu中断控制回调函数地址
  * Return        : None
@@ -35,11 +34,12 @@ void OS_TaskInit(void) {
 /* Function Name:void OS_CreatTask(unsigned char ID, void (*proc)(void),
 unsigned short Period, OS_TaskStatusTypeDef flag)
 * Descriptin    :创建任务
-* Input         :-ID       :任务ID
-*               -(*proc)():用户函数入口地址
-*               -Period   :任务执行频率,单位:ms
-*               -flag     :任务就绪状态:OS_SLEEP-休眠
-OS_RUN-运行,定时唤醒,没有作用 *Output        :None *Return        :None
+* Input         : -    ID       : 任务ID
+*                 -   (*proc)(): 用户函数入口地址
+*                 -   Period   : 任务执行频率,单位:ms
+*                 -   flag     : 任务就绪状态:OS_SLEEP-休眠
+OS_RUN-运行,定时唤醒,没有作用
+*Output        :None *Return        :None
 *Attention     :None
 * */
 void OS_CreatTask(unsigned char ID, void (*proc)(void), unsigned short Period,

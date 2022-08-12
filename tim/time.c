@@ -65,6 +65,24 @@ TIMER_RESULT_TYPEDEF hal_CtrlTimerAction(TIMER_ID_TYPEDEF id,
 }
 
 /*
+ * Function Name : hal_GetTimerState
+ * Descriptin    : 获取定时器状态
+ * Input         : - id  : 定时器ID
+ *                 - sta : 定时器状态
+ * Return        : None
+ * Attention     : None
+ */
+TIMER_STATE_TYPEDEF hal_GetTimerState(TIMER_ID_TYPEDEF id) {
+  if (Stu_Timer[id].func) //判断定时器是否存在
+  {
+    return Stu_Timer[id].state;
+
+  } else {
+    return T_STA_INVAILD;
+  }
+}
+
+/*
  * Function Name : hal_DeleteTimer
  * Descriptin    : 删除定时器
  * Input         : - id  : 定时器ID

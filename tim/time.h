@@ -26,4 +26,6 @@ TIMER_RESULT_TYPEDEF hal_ResetTimer(TIMER_ID_TYPEDEF id,
 TIMER_RESULT_TYPEDEF hal_DeleteTimer(TIMER_ID_TYPEDEF id);
 TIMER_RESULT_TYPEDEF hal_CtrlTimerAction(TIMER_ID_TYPEDEF id,
                                          TIMER_STATE_TYPEDEF sta);
+TIMER_STATE_TYPEDEF hal_GetTimerState(TIMER_ID_TYPEDEF id);
+
 #endif
