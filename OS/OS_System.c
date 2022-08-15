@@ -1,3 +1,9 @@
+/* 移植流程：软件rtos与硬件结合(内核移植)
+ * 1.把OS_ClockInterruptHandle()放到单片机定时器中断处理函数里，定时频率10ms，一般采用单片机systick
+ * 2.重写单片机总中断
+ * 3.通过OS_CPUInterruptCBSRegister()函数把内核中断处理函数指针指向单片机总中断开关处理函数
+ * * * */
+
 #include "OS_System.h"
 #include <stdio.h>
 
@@ -67,7 +73,7 @@ void OS_ClockInterruptHandle(void) {
   for (i = 0; i < OS_TASK_SUM; i++) {
     if (OS_Task[i].task) { //通过task函数指针指向不等于0判断任务是否被创建
       OS_Task[i].RunTimer++;
-      if (OS_Task[i].RunTimer >
+      if (OS_Task[i].RunTimer >=
           OS_Task[i].RunPeriod) { //判断计时器值是否达到任务需要执行的时间
         OS_Task[i].RunTimer = 0;
         OS_Task[i].RunFlag =
