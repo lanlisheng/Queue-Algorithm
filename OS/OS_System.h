@@ -128,7 +128,7 @@ typedef void (*CPUInterrupt_CallBack_t)(CPU_EA_TYPEDEF cmd,
                                         unsigned char *pSta);
 
 //系统任务ID.数量:用枚举灵活分配数组大小
-typedef enum { OS_TASK1, OS_TASK_SUM } OS_TaskID_TypeDef;
+typedef enum { OS_TASK1, OS_TASK2, OS_TASK_SUM } OS_TaskID_TypeDef;
 
 //系统任务运行状态
 typedef enum {

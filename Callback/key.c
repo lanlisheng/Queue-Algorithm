@@ -1,38 +1,167 @@
 #include "key.h"
 
-KEY_ID_TYPEDEF keyVal;      //按键ID
-KEY_STATE_TYPEDEF keyState; //按键状态
+KeyEvent_CallBack_t KeyScanCBS;
 
-pKeyScanCallBack pKeyScanCBS; //定义一个函数指针变量
+static void hal_keyConfig(void);
 
-void KeyInit(void) {
-  keyVal = 0;
-  keyState = KEY_IDLE;
-  pKeyScanCBS = 0;
-}
+static unsigned char hal_getKey1Sta(void);
+static unsigned char hal_getKey2Sta(void);
+static unsigned char hal_getKey3Sta(void);
+static unsigned char hal_getKey4Sta(void);
+static unsigned char hal_getKey5Sta(void);
+static unsigned char hal_getKey6Sta(void);
 
-/*
- * 注册函数
- * 2.如何将该函数指针变量指向应用层的函数地址
- *
- * */
-void KeyScanCBSRegister(pKeyScanCallBack pCBS) {
-  if (pKeyScanCBS == 0) {
-    //=0说明该函数指针未被注册过
-    pKeyScanCBS = pCBS;
+unsigned char (*getKeysState[KEYNUM])() = {
+    hal_getKey1Sta, hal_getKey2Sta, hal_getKey3Sta,
+    hal_getKey4Sta, hal_getKey5Sta, hal_getKey6Sta,
+};
+
+unsigned char KeyStep[KEYNUM];            //按键检测流程
+unsigned short KeyScanTime[KEYNUM];       //去抖延时
+unsigned short KeyPressLongTimer[KEYNUM]; //长按延时
+unsigned short KeyContPressTimer[KEYNUM]; //连续长按延时
+
+void hal_KeyScanCBSRegister(KeyEvent_CallBack_t pCBS) {
+  if (KeyScanCBS == 0) {
+    KeyScanCBS = pCBS;
   }
 }
 
-void KeyPoll(void) {
-  printf("Please Enter Key value: ");
-  if (scanf("%d", &keyVal) == 1) {
-    printf("\r\n");
-    printf("Please Enter key state:");
-    if (scanf("%d", &keyState) == 1) {
-      if (pKeyScanCBS != 0) {
-        pKeyScanCBS(keyVal, keyState);
-        //由于将应用层的函数赋值给到了该函数指针变量,此处的操作相当于:KeyScanHandle(keyVal,keyState);
+void hal_KeyInit(void) {
+  unsigned char i;
+  KeyScanCBS = 0;
+  hal_keyConfig();
+
+  for (i = 0; i < KEYNUM; i++) {
+    KeyStep[i] = KEY_STEP_WAIT;
+    KeyScanTime[i] = KEY_SCANTIME;
+    KeyPressLongTimer[i] = KEY_PRESS_LONG_TIME;
+    KeyContPressTimer[i] = KEY_PRESS_CONTINUE_TIME;
+  }
+}
+
+void hal_KeyProc(void) {
+  unsigned char keys = 0;
+  unsigned char i = 0;
+  unsigned char KeyState[KEYNUM] = 0;
+
+  for (i = 0; i < KEYNUM; i++) {
+    keys = 0;
+    KeyState[i] = getKeysState[i]();
+    switch (KeyStep[i]) {
+    case KEY_STEP_WAIT: /* 等待按键 */
+      if (KeyState[i]) {
+        KeyStep[i] = KEY_STEP_CLICK;
+      }
+      break;
+    case KEY_STEP_CLICK: /* 按键单击按下 */
+      if (KeyState[i]) {
+        if (!(--KeyScanTime[i])) {
+          KeyScanTime[i] = KEY_SCANTIME;
+          KeyStep[i] = KEY_STEP_LONG_PRESS;
+          keys = (i * 5) + 1; //记录按键ID号
+        }
+      } else {
+        KeyScanTime[i] = KEY_SCANTIME;
+        KeyStep[i] = KEY_STEP_WAIT;
+      }
+      break;
+    case KEY_STEP_LONG_PRESS: /* 按键长按 */
+      if (KeyState[i]) {
+        if (!(--KeyPressLongTimer[i])) {
+          KeyPressLongTimer[i] = KEY_PRESS_LONG_TIME;
+          KeyStep[i] = KEY_STEP_CONTINUOUS_PRESS;
+          keys = (i * 5) + 3; //长按确认
+        }
+      } else {
+        KeyPressLongTimer[i] = KEY_PRESS_LONG_TIME;
+        KeyStep[i] = KEY_STEP_WAIT;
+        keys = (i * 5) + 2; //单击释放
+      }
+      break;
+    case KEY_STEP_CONTINUOUS_PRESS:
+      if (KeyStep[i]) {
+        if (!(--KeyContPressTimer[i])) {
+          KeyContPressTimer[i] = KEY_PRESS_CONTINUE_TIME;
+          keys = (i * 5) + 4;
+        }
+      } else {
+        KeyStep[i] = KEY_STEP_WAIT;
+        KeyContPressTimer[i] = KEY_PRESS_CONTINUE_TIME;
+        keys = (i * 5) + 5; //长按释放
+      }
+      break;
+    }
+    if (keys) {
+      if (KeyScanCBS) {
+        KeyScanCBS((KEY_VALUE_TYPEDEF)keys);
       }
     }
   }
+}
+
+static void hal_keyConfig(void) {
+  /* 硬件资源初始化过程
+   * GPIO
+   * */
+
+  // GPIO_InitTypeDef GPIO_InitStructure;
+
+  // RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
+
+  // GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+
+  // GPIO_InitStructure.GPIO_Pin = K1_PIN;
+  // GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  // GPIO_Init(K1_PORT, &GPIO_InitStructure);
+
+  // GPIO_InitStructure.GPIO_Pin = K2_PIN;
+  // GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  // GPIO_Init(K2_PORT, &GPIO_InitStructure);
+
+  // GPIO_InitStructure.GPIO_Pin = K3_PIN;
+  // GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  // GPIO_Init(K3_PORT, &GPIO_InitStructure);
+
+  // GPIO_InitStructure.GPIO_Pin = K4_PIN;
+  // GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  // GPIO_Init(K4_PORT, &GPIO_InitStructure);
+
+  // GPIO_InitStructure.GPIO_Pin = K5_PIN;
+  // GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  // GPIO_Init(K5_PORT, &GPIO_InitStructure);
+
+  // GPIO_InitStructure.GPIO_Pin = K6_PIN;
+  // GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  // GPIO_Init(K6_PORT, &GPIO_InitStructure);
+}
+
+static unsigned char hal_getKey1Sta(void) {
+  // return (!GPIO_ReadInputDataBit(K1_PORT, K1_PIN));
+}
+
+static unsigned char hal_getKey2Sta(void) {
+  // return (!GPIO_ReadInputDataBit(K2_PORT, K2_PIN));
+}
+
+static unsigned char hal_getKey3Sta(void) {
+  // return (!GPIO_ReadInputDataBit(K3_PORT, K3_PIN));
+}
+
+static unsigned char hal_getKey4Sta(void) {
+  // return (!GPIO_ReadInputDataBit(K4_PORT, K4_PIN));
+}
+
+static unsigned char hal_getKey5Sta(void) {
+  // return (!GPIO_ReadInputDataBit(K5_PORT, K5_PIN));
+}
+
+static unsigned char hal_getKey6Sta(void) {
+  // return (!GPIO_ReadInputDataBit(K6_PORT, K6_PIN));
 }
