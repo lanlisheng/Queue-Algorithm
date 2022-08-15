@@ -59,7 +59,7 @@ void hal_LedProc(void) {
   unsigned char i;
   unsigned char cmd;
   for (i = 0; i < LED_SUM; i++) {
-    if ((QueueDataLen(LedCmdBuff[i]) > 0) && (LedLoadFlag[i] = 0)) {
+    if ((QueueDataLen(LedCmdBuff[i]) > 0) && (LedLoadFlag[i] == 0)) {
       QueueDataOut(LedCmdBuff[i], &cmd);
       LedLoadFlag[i] = 1;
       switch (cmd) {

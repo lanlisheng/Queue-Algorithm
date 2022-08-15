@@ -1,21 +1,21 @@
-#include "Queue.h"
+#include "OS_System.h"
+#include "cpu.h"
+#include "hal_time.h"
 #include "key.h"
+#include "led.h"
 #include <stdio.h>
 
-Queue4 KeyMsg;
+int main(void) {
+  hal_CPUInit();
+  OS_TaskInit();
+  hal_TimeInit();
 
-/* 应用层重新一个回调函数
- * 1.将该函数的地址赋值给pKeyScanCBS这个函数指针变量
- *
- * * */
-void KeyScanHandle(KEY_ID_TYPEDEF KeyID, KEY_STATE_TYPEDEF KeyState) {
-  if (KeyID == KEY1) {
-    printf("KeyID IS KEY1\r\n");
-    if (KeyState == KEY_PRESS) {
-      printf("KeyState is KEY_PRESS\r\n");
-    }
-  }
+  hal_LedInit();
+  OS_CreatTask(OS_TASK1, hal_LedProc, 1, OS_RUN);
+
+  OS_Start();
 }
+
 /* Queue */
 // int main(int argc, char *argv[]) {
 //   unsigned char a;
@@ -29,14 +29,14 @@ void KeyScanHandle(KEY_ID_TYPEDEF KeyID, KEY_STATE_TYPEDEF KeyState) {
 // }
 
 /* KEY */
-int main(int argc, char *argv[]) {
+// int main(int argc, char *argv[]) {
 
-  KeyInit();
-  KeyScanCBSRegister(KeyScanHandle);
-  KeyPoll();
+//   KeyInit();
+//   KeyScanCBSRegister(KeyScanHandle);
+//   KeyPoll();
 
-  return 0;
-}
+//   return 0;
+// }
 
 /* Test */
 //入列操作
