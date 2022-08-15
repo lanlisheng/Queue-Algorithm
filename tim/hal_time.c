@@ -1,4 +1,8 @@
-#include "time.h"
+#include "hal_time.h"
+#include "led.h"
+
+static void hal_TimerHandle(void);
+static void hal_Timer4Config(void);
 
 volatile Stu_TimerTypeDef Stu_Timer[T_SUM];
 
@@ -21,19 +25,44 @@ void hal_TimeInit(void) {
  * Return        : None
  * Attention     : None
  */
-void hal_Timer4Config(void) {
+static void hal_Timer4Config(void) {
   /* 此处加入定时器初始化函数：固件库与HAL库有些许不同
    * 此中配置定时器的时间基准
    *
    * * */
+  // TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+  // NVIC_InitTypeDef NVIC_InitStructure;
+  // RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+
+  // TIM_DeInit(TIM4);
+  // // TIM_TimeBaseStructure.TIM_Period = 10000; 			//10ms
+  // //	TIM_TimeBaseStructure.TIM_Period = 1000; 			//1ms
+  // TIM_TimeBaseStructure.TIM_Period = 50; // 50us
+  // TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / 1000000 - 1;
+  // TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+  // TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  // TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  // TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
+
+  // TIM_ClearFlag(TIM4, TIM_FLAG_Update);
+  // TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
+
+  // TIM_Cmd(TIM4, ENABLE);
+
+  // NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+  // NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
+  // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  // NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  // NVIC_Init(&NVIC_InitStructure);
 }
 
 /*
  * Function Name : hal_CreatTimer
  * Descriptin    : 创建定时器函数
  * Input         : - id        :  定时器ID
- *                 - (*proc)() :函数指针
- *                 - Period    : 定时周期，单位50um
+ *                 - (*proc)() :  函数指针
+ *                 - Period    :  定时周期，单位50um
  *                 - state     ： 定时器初始状态
  * Return        : None
  * Attention     : None
@@ -125,16 +154,15 @@ TIMER_RESULT_TYPEDEF hal_ResetTimer(TIMER_ID_TYPEDEF id,
  * Return        : None
  * Attention     : None
  */
-void hal_TimerHandle(void) {
+static void hal_TimerHandle(void) {
   unsigned char i;
   for (i = 0; i < T_SUM; i++) {
     if ((Stu_Timer[i].func) && (Stu_Timer[i].state == T_STA_START)) {
       Stu_Timer[i].CurrentCount++;
       if (Stu_Timer[i].CurrentCount >= Stu_Timer[i].Period) {
         Stu_Timer[i].state = T_STA_STOP;
-        Stu_Timer[i].CurrentCount =
-            Stu_Timer[i]
-                .CurrentCount; //一直保持当前计时值：此时定时器时单个定时，循环的话需要复位
+        Stu_Timer[i].CurrentCount = Stu_Timer[i].CurrentCount;
+        //一直保持当前计时值：此时定时器时单个定时，循环的话需要复位
         Stu_Timer[i].func();
       }
     }
@@ -149,6 +177,6 @@ void hal_TimerHandle(void) {
  * Attention     : x - 属于硬件的那个定时器：定时器1-8
  */
 void TIMx_IRQHandle(void) {
-  hal_TimerHandle();
   // TIM_ClearFlag(TIMx, TIM_FLAG_Update); //清除定时器标志位：定时器x，
+  hal_TimerHandle();
 }

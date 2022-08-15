@@ -1,7 +1,7 @@
-#ifndef _TIME_H_
-#define _TIME_H_
+#ifndef _HAL_TIME_H_
+#define _HAL_TIME_H_
 
-typedef enum { T_LED, T_KEY, T_RFD, T_SUM } TIMER_ID_TYPEDEF;
+typedef enum { T_LED, T_SUM } TIMER_ID_TYPEDEF;
 
 typedef enum { T_SUCCESS, T_FAIL } TIMER_RESULT_TYPEDEF;
 

@@ -11,7 +11,8 @@ typedef enum {
   LED_LIGHT,
   LED_BLINK1,
   LED_BLINK2,
-  LED_BLINK3
+  LED_BLINK3,
+  LED_BLINK4
 } LED_EFFECT_TYPEDEF;
 
 #endif
