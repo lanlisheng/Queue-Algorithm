@@ -4,6 +4,7 @@
 #define SystemCoreClock 72000000
 
 static void hal_CoreClockInit(void);
+static unsigned char hal_getprimask(void);
 static void hal_CPU_Critical_Control(CPU_EA_TYPEDEF cmd, unsigned char *pSta);
 
 /*
@@ -35,18 +36,6 @@ static void hal_CoreClockInit(void) {
 }
 
 /*
- * Function Name : SysTick_Handler
- * Descriptin    : CPU系统时钟中断
- * Input         : None
- * Output        : None
- * Return        : None
- * Attention     : 内核时钟10ms定时中断回调函数，一定要将系统时钟处理函数放进去
- */
-void SysTick_Handler(void) {
-  OS_ClockInterruptHandle(); //系统Systick定时中断处理
-}
-
-/*
  * Function Name : hal_getprmask
  * Descriptin    : 获取CPU总中断状态
  * Input         : None
@@ -54,7 +43,8 @@ void SysTick_Handler(void) {
  * Return        : None
  * Attention     : STM32固件库系统函数
  */
-static unsigned char hal_getprmask(void) {
+static unsigned char hal_getprimask(void) {
+  //此函数是STM32固件库的库函数__get_PRIMASK()
   return (!__get_PRIMASK()); // 0-总中断打开 1-总中断关闭  所以此处取反
 }
 
@@ -78,4 +68,16 @@ void hal_CPU_Critical_Control(CPU_EA_TYPEDEF cmd, unsigned char *pSta) {
       __disbale_irq(); //关闭CPU总中断
     }
   }
+}
+
+/*
+ * Function Name : SysTick_Handler
+ * Descriptin    : CPU系统时钟中断
+ * Input         : None
+ * Output        : None
+ * Return        : None
+ * Attention     : 内核时钟10ms定时中断回调函数，一定要将系统时钟处理函数放进去
+ */
+void SysTick_Handler(void) {
+  OS_ClockInterruptHandle(); //系统Systick定时中断处理
 }

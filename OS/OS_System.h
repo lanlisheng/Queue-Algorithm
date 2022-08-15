@@ -1,6 +1,120 @@
 #ifndef _OS_SYSTEM_H_
 #define _OS_SYSTEM_H_
 
+extern void S_QueueEmpty(unsigned char **Head, unsigned char **Tail,
+                         unsigned char *pBuff);
+extern void S_QueueDataIn(unsigned char **Head, unsigned char **Tail,
+                          unsigned char *pBuff, unsigned char Len,
+                          unsigned char *pData, unsigned char DataLen);
+extern unsigned char S_QueueDataOut(unsigned char **Head, unsigned char **Tail,
+                                    unsigned char *pBuff, unsigned char Len,
+                                    unsigned char *pData);
+extern unsigned short S_QueueDataLen(unsigned char **Head, unsigned char **Tail,
+                                     unsigned char *pBuff, unsigned char Len);
+
+#define QueueEmpty(x)                                                          \
+  S_QueueEmpty((unsigned char **)&(x).Head, (unsigned char **)&(x).Tail,       \
+               (unsigned char *)(x).Buff)
+
+#define QueueDataIn(x, y, z)                                                   \
+  S_QueueDataIn((unsigned char **)&(x).Head, (unsigned char **)&(x).Tail,      \
+                (unsigned char *)(x).Buff, sizeof((x).Buff), y, z)
+
+#define QueueDataOut(x, y)                                                     \
+  ((unsigned char **)&(x).Head, (unsigned char **)&(x).Tail,                   \
+   (unsigned char *)(x).Buff, sizeof((x).Buff), y)
+#define QueueDataLen(x)                                                        \
+  ((unsigned char **)&(x).Head, (unsigned char **)&(x).Tail,                   \
+   (unsigned char *)(x).Buff, sizeof((x).Buff))
+
+/* 1.定义好一个队列的数据结构 */
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[4 + 1];
+} Queue4;
+
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[8 + 1];
+} Queue8;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[16 + 1];
+} Queue16;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[32 + 1];
+} Queue32;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[64 + 1];
+} Queue64;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[90 + 1];
+} Queue90;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[120 + 1];
+} Queue120;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[340 + 1];
+} Queue340;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[745 + 1];
+} Queue745;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[128 + 1];
+} Queue128;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[248 + 1];
+} Queue248;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[256 + 1];
+} Queue256;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[512 + 1];
+} Queue512;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[1024 + 1];
+} Queue1K;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[2048 + 1];
+} Queue2K;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[5120 + 1];
+} Queue5K;
+typedef struct {
+  unsigned char *Head;
+  unsigned char *Tail;
+  unsigned char Buff[10240 + 1];
+} Queue10K;
+
 typedef enum {
   CPU_ENTER_CRITICAL, // CPU进入临界状态
   CPU_EXIT_CRITICAL   // CPU退出临界状态
@@ -22,7 +136,7 @@ typedef enum {
   OS_RUN = !OS_SLEEP //任务运行
 } OS_TaskStatusTypeDef;
 
- // 编写系统内核之第一步:创建系统任务结构体
+// 编写系统内核之第一步:创建系统任务结构体
 typedef struct {
   void (*task)(void); //任务函数指针:函数指针指向处理函数,一般是while(1)中的函数
   OS_TaskStatusTypeDef RunFlag; //任务运行状态:休眠还是运行
